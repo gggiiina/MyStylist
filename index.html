@@ -9,14 +9,15 @@
 
   <style>
     :root {
-      --main-color: #8C7AA9;          /* 主色調 - 深紫 */
-      --secondary-color: #B8A9D1;     /* 次要色 - 淺紫 */
-      --accent-color: #F0EAFB;        /* 點綴色 - 極淺紫 */
-      --hover-main: #7B6995;          /* 主色hover */
-      --hover-secondary: #9E8BC3;     /* 次要hover */
-      --text-color: #4C445B;          /* 文字色 */
-      --bg-color: #F9F8FC;            /* 背景色 */
+      --main-color: #8C7AA9;
+      --secondary-color: #B8A9D1;
+      --accent-color: #F0EAFB;
+      --hover-main: #7B6995;
+      --hover-secondary: #9E8BC3;
+      --text-color: #4C445B;
+      --bg-color: #F9F8FC;
       --shadow-color: rgba(140,122,169,0.25);
+      --modal-bg: rgba(0, 0, 0, 0.4);
     }
 
     * {
@@ -110,6 +111,7 @@
       aspect-ratio: 4 / 5;
       border-bottom: 1px solid var(--accent-color);
       user-select: none;
+      cursor: pointer;
     }
 
     .product-info {
@@ -140,7 +142,74 @@
       background-color: var(--accent-color);
     }
 
-    /* 手機版優化 */
+    /* Modal 樣式 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: var(--modal-bg);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 380px;
+      width: 90%;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--text-color);
+      user-select: none;
+      position: relative;
+    }
+
+    .modal p {
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .modal-button {
+      padding: 10px 28px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+
+    .btn-confirm {
+      background-color: var(--main-color);
+      color: white;
+    }
+    .btn-confirm:hover {
+      background-color: var(--hover-main);
+    }
+
+    .btn-cancel {
+      background-color: var(--accent-color);
+      color: var(--text-color);
+    }
+    .btn-cancel:hover {
+      background-color: var(--hover-secondary);
+      color: white;
+    }
+
     @media (max-width: 600px) {
       .navbar {
         padding: 0 16px;
@@ -167,6 +236,12 @@
       .product-card img {
         aspect-ratio: 3 / 4;
       }
+
+      .modal {
+        max-width: 320px;
+        padding: 24px 28px;
+        font-size: 1rem;
+      }
     }
 
     @media (max-width: 360px) {
@@ -175,6 +250,52 @@
         gap: 14px;
       }
     }
+
+    /* Loading dots 動畫 */
+    .loading-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .dot {
+      width: 14px;
+      height: 14px;
+      background-color: var(--main-color);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    .dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.7;
+      }
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+.progress-bar-container {
+  width: 100%;
+  height: 14px;
+  background-color: var(--accent-color);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: var(--main-color);
+  border-radius: 10px 0 0 10px;
+  transition: width 0.1s linear;
+}
+
+
   </style>
 </head>
 <body>
@@ -236,5 +357,123 @@
     </section>
   </main>
 
+  <!-- Modal HTML -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <p id="modal-title">是否要搜尋衣櫃裡的衣服？</p>
+      <div class="modal-buttons">
+        <button class="modal-button btn-confirm" id="btnConfirm">確定</button>
+        <button class="modal-button btn-cancel" id="btnCancel">取消</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Loading Modal (改成進度條) -->
+<div class="modal-overlay" id="loadingModal" aria-live="polite" aria-label="搜尋中">
+  <div class="modal" role="alert" aria-busy="true" style="flex-direction: column; gap: 24px;">
+    <p style="font-weight: 600; font-size: 1.2rem; color: var(--main-color); user-select: none;">搜尋中...</p>
+    <div class="progress-bar-container" aria-label="搜尋進度條" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+</div>
+<script>
+
+  const modal = document.getElementById('modal');
+  const btnCancel = document.getElementById('btnCancel');
+  const btnConfirm = document.getElementById('btnConfirm');
+
+  let currentProduct = null;
+
+  // 點圖片 → 打開確認視窗
+  document.querySelectorAll('.product-card img').forEach(img => {
+    img.addEventListener('click', () => {
+      currentProduct = img.closest('.product-card');
+      openModal();
+    });
+  });
+
+  function openModal() {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  btnCancel.addEventListener('click', () => {
+    closeModal();
+  });
+
+  btnConfirm.addEventListener('click', () => {
+    closeModal();
+    openLoading();
+
+    setTimeout(() => {
+      closeLoading();
+      alert('搜尋完成！(你可以改成真正的搜尋行為)');
+    }, 3000);
+  });
+
+  const loadingModal = document.getElementById('loadingModal');
+  const progressBar = loadingModal.querySelector('.progress-bar');
+
+  function openLoading() {
+    loadingModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    startProgressBar();
+  }
+
+  function closeLoading() {
+    loadingModal.classList.remove('active');
+    document.body.style.overflow = '';
+    resetProgressBar();
+  }
+
+  // 進度條從0%增長到100%，3秒完成
+  function startProgressBar() {
+    let progress = 0;
+    progressBar.style.width = '0%';
+    progressBar.parentElement.setAttribute('aria-valuenow', 0);
+
+    const interval = 30; // 更新間隔ms
+    const totalDuration = 3000; // 3秒
+    const increment = 100 / (totalDuration / interval);
+
+    const timer = setInterval(() => {
+      progress += increment;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(timer);
+      }
+      progressBar.style.width = progress + '%';
+      progressBar.parentElement.setAttribute('aria-valuenow', Math.floor(progress));
+    }, interval);
+  }
+
+  function resetProgressBar() {
+    progressBar.style.width = '0%';
+    progressBar.parentElement.setAttribute('aria-valuenow', 0);
+  }
+
+  btnConfirm.addEventListener('click', () => {
+    closeModal();
+    openLoading();
+
+    setTimeout(() => {
+      closeLoading();
+      alert('搜尋完成！(你可以改成真正的搜尋行為)');
+    }, 3000);
+  });
+
+  document.querySelector('.fa-shirt').addEventListener('click', () => {
+    'https://www.google.com/'
+    window.location.href = 'closet.html';
+  });
+</script>
+
 </body>
 </html>
+
