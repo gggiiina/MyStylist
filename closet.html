@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的衣櫃 - MyStylist</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --main-color: #8C7AA9;
+      --secondary-color: #B8A9D1;
+      --accent-color: #F0EAFB;
+      --hover-main: #7B6995;
+      --hover-secondary: #9E8BC3;
+      --text-color: #4C445B;
+      --bg-color: #F9F8FC;
+      --shadow-color: rgba(140,122,169,0.25);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 64px;
+      background: white;
+      box-shadow: 0 3px 10px var(--shadow-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 100;
+      border-bottom: 3px solid var(--secondary-color);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-color);
+      letter-spacing: 1px;
+      user-select: none;
+    }
+    .nav-icons {
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-icons i {
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.25s ease;
+      padding: 6px;
+      border-radius: 50%;
+    }
+
+    .nav-icons i:hover {
+      color: var(--hover-secondary);
+      background-color: var(--accent-color);
+      transform: scale(1.15);
+    }
+
+    main {
+      padding: 100px 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .closet-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .filter-btn:hover {
+      background-color: var(--hover-secondary);
+      color: white;
+    }
+
+    .closet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 18px;
+    }
+
+    .item-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 12px var(--shadow-color);
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+
+    .item-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .item-card img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+    }
+
+    .item-actions {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .item-actions i {
+      background-color: white;
+      padding: 6px;
+      border-radius: 50%;
+      color: var(--main-color);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .item-actions i:hover {
+      background-color: var(--accent-color);
+    }
+
+    @media (max-width: 600px) {
+      .closet-title {
+        font-size: 1.4rem;
+      }
+
+      .nav-icons {
+        gap: 16px;
+      }
+
+      .nav-icons i {
+        font-size: 1.3rem;
+        padding: 4px;
+      }
+
+      main {
+        padding: 90px 16px 30px;
+      }
+    }
+.upload-section {
+  margin-bottom: 24px;
+}
+
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--main-color);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.upload-label:hover {
+  background-color: var(--hover-main);
+}
+
+.upload-label i {
+  margin-right: 8px;
+}
+  </style>
+</head>
+<body>
+
+  <!-- 導覽列 -->
+  <nav class="navbar">
+    <div class="logo">MyStylist</div>
+    <div class="nav-icons">
+      <i class="fas fa-heart" title="穿搭" aria-label="穿搭"></i>
+      <i class="fas fa-shirt" title="衣櫃" aria-label="衣櫃"></i>
+    </div>
+  </nav>
+
+  <!-- 主內容 -->
+  <main>
+    <h1 class="closet-title">我的衣櫃</h1>
+
+    <div class="filter-bar">
+      <button class="filter-btn">全部</button>
+      <button class="filter-btn">上衣</button>
+      <button class="filter-btn">下身</button>
+      <button class="filter-btn">外套</button>
+    </div>
+<div class="upload-section">
+  <label for="upload-input" class="upload-label">
+    <i class="fas fa-upload"></i> 上傳新衣物
+  </label>
+  <input type="file" id="upload-input" accept="image/*" hidden />
+</div>
+    <section class="closet-grid">
+      <div class="item-card">
+        <img src="https://www.gu-global.com/tw/hmall/test/u0000000050704/main/first/561/1.jpg" alt="衣物1" />
+        <div class="item-actions">
+          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <img src="https://www.gu-global.com/tw/hmall/test/u0000000050705/main/first/561/1.jpg" alt="衣物2" />
+        <div class="item-actions">
+          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+        </div>
+      </div>
+
+      <!-- 更多衣物 -->
+    </section>
+  </main>
+
+  <script>
+    // Icon 點擊導頁
+    document.querySelector('.fa-heart').addEventListener('click', () => {
+      window.location.href = 'index.html'; // 穿搭主頁
+    });
+
+    document.querySelector('.fa-shirt').addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // 衣櫃當前頁，滑動到頂
+    });
+// 加在 <script> 裡：預覽功能（非必須，可刪除）
+document.getElementById('upload-input').addEventListener('change', function (event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.innerHTML = `
+        <img src="${img.src}" alt="新衣物" />
+        <div class="item-actions">
+          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+        </div>
+      `;
+      document.querySelector('.closet-grid').prepend(card);
+    };
+    reader.readAsDataURL(file);
+  }
+});
+  </script>
+
+</body>
+</html>
