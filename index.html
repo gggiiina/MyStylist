@@ -1,330 +1,140 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MyStylist - 你的時尚 AI 助理</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
-/* 根據網站的色系與設計語言來調整 */
-:root {
-  --main-color: #8C7AA9;
-  --text-color: #4C445B;
-  --accent-color: #F0EAFB;
-  --bg-color: #F9F8FC;
-  --hover-color: #7B6995;
-  --shadow-color: rgba(140,122,169,0.3);
-  --transition-speed: 0.3s;
-  --border-color: #DCDCDC; /* 淺色細線的顏色 */
-}
-
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  overflow-x: hidden;
-}
-
-/* 全螢幕背景 */
-  .hero {
-    background-image: url(hero_bg.jpg); /* 替換為適合的圖像 */
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--text-color);
-    padding: 0 20px;
-    border-bottom: 1px solid var(--border-color);
-    position: relative;
-    overflow: hidden;
-  }
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.6); /* 透明遮罩層 (黑色 + 50% 透明度) */
-  z-index: 1; /* 確保透明遮罩層在圖片之上 */
-}
-
-.hero > div {
-  position: relative;
-  z-index: 2; /* 使文字和按鈕等內容顯示在透明遮罩層之上 */
-}
-
-  .hero::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-
-  .hero-title {
-    font-size: 60px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--text-color);
-    animation: fadeIn 1.5s ease-out;
-  }
-
-  .hero-description {
-    font-size: 20px;
-    margin-top: 20px;
-    font-weight: 300;
-    animation: fadeIn 2s ease-out;
-    opacity: 0;
-    animation-delay: 0.5s;
-  }
-
-  .btn-hero {
-    display: inline-block;
-    background-color: var(--text-color);
-    color: white;
-    padding: 12px 30px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 50px;
-    margin-top: 20px;
-    margin-right: 20px;
-    transition: background-color 0.8s ease, transform 0.8s ease;
-    opacity: 0; /* 初始不可見 */
-    animation: fadeIn 1.8s ease-out forwards; /* 使用 'forwards' 保持最終狀態 */
-    animation-delay: 0.5s;
-  } 
-
-  .btn-hero:hover {
-    background-color: var(--hover-color);
-    transform: scale(1.1);
-  }
-
-  .btn-start {
-    animation-delay: 1.2s;
-  }
-
-/* 願景區 */
-#vision {
-  padding: 60px 20px;
-  text-align: center;
-  background-image: url('https://via.placeholder.com/1920x1080'); /* 使用與 hero 區域相同的背景圖片 */
-  background-size: cover;
-  background-position: center;
-  color: var(--text-color);
-  border-bottom: 1px solid var(--border-color); /* 添加底部分隔線 */
-}
-
-#vision h2 {
-  font-size: 32px;
-  color: var(--main-color);
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-#vision p {
-  font-size: 18px;
-  line-height: 1.8;
-  margin-bottom: 20px;
-}
-
-/* 核心理念區 */
-.section {
-  
-  padding: 60px 20px;
-  text-align: center;
-  max-width: 1000px;
-  margin: 0 auto;
-  border-bottom: 1px solid var(--border-color); /* 添加底部分隔線 */
-}
-
-.section h2 {
-  font-size: 32px;
-  color: var(--main-color);
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-.section p {
-  font-size: 18px;
-  line-height: 1.8;
-  margin-bottom: 20px;
-}
-
-/* 團隊成員區 */
-.team-members {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-  margin-top: 40px;
-  padding: 40px 20px;
-}
-
-.team-members h2 {
-  font-size: 32px;
-  color: var(--main-color);
-  margin-bottom: 30px;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* 團隊成員的單個卡片 */
-.team-member {
-  background-color: var(--accent-color);
-  border-radius: 5px;
-  padding: 5px;
-  width: 220px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  text-align: center;
-}
-
-.team-member:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 6px 20px var(--shadow-color);
-}
-
-.team-member h3 {
-  font-size: 22px;
-  color: var(--text-color);
-  font-weight: bold;
-}
-
-.team-member p {
-  font-size: 14px;
-  color: var(--text-color);
-  margin-top: 10px;
-}
-
-
-  /* 動畫效果 */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(50px);
+    /* ====== 與原本一樣的樣式 ====== */
+    :root {
+      --main-color: #8C7AA9;
+      --text-color: #4C445B;
+      --accent-color: #F0EAFB;
+      --bg-color: #F9F8FC;
+      --hover-color: #7B6995;
+      --shadow-color: rgba(140,122,169,0.3);
+      --transition-speed: 0.3s;
+      --border-color: #DCDCDC;
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    body, html { margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+
+    .hero {
+      background-image: url(hero_bg.jpg);
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      text-align: center; color: var(--text-color);
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-color);
+      position: relative; overflow: hidden;
     }
-  }
+    .hero::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.6);
+      z-index: 1;
+    }
+    .hero > div { position: relative; z-index: 2; }
+    .hero-title { font-size: 60px; font-weight: bold; letter-spacing: 2px; animation: fadeIn 1.5s ease-out; }
+    .hero-description { font-size: 20px; margin-top: 20px; font-weight: 300; animation: fadeIn 2s ease-out; opacity: 0; animation-delay: 0.5s; }
+    .btn-hero {
+      display: inline-block; background-color: var(--text-color); color: white;
+      padding: 12px 30px; font-weight: bold; text-decoration: none; border-radius: 50px;
+      margin-top: 20px; margin-right: 20px;
+      transition: background-color 0.8s ease, transform 0.8s ease;
+      opacity: 0; animation: fadeIn 1.8s ease-out forwards; animation-delay: 0.5s;
+    }
+    .btn-hero:hover { background-color: var(--hover-color); transform: scale(1.1); }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-  .hero h1 {
-    font-size: 36px;
-  }
+    .section { padding: 60px 20px; text-align: center; max-width: 1000px; margin: 0 auto; border-bottom: 1px solid var(--border-color); }
+    .section h2 { font-size: 32px; color: var(--main-color); margin-bottom: 30px; font-weight: bold; }
+    .section p { font-size: 18px; line-height: 1.8; margin-bottom: 20px; }
 
-  .btn-hero {
-    padding: 10px 20px;
-  }
+    .team-members { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px; padding: 40px 20px; }
+    .team-member { background-color: var(--accent-color); border-radius: 5px; padding: 5px; width: 220px; box-shadow: 0 4px 12px var(--shadow-color); transition: transform var(--transition-speed), box-shadow var(--transition-speed); text-align: center; }
+    .team-member:hover { transform: translateY(-10px); box-shadow: 0 6px 20px var(--shadow-color); }
+    .team-member h3 { font-size: 22px; color: var(--text-color); font-weight: bold; }
+    .team-member p { font-size: 14px; color: var(--text-color); margin-top: 10px; }
 
-  .section h2 {
-    font-size: 28px;
-  }
-
-  .team-member {
-    width: 180px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero h1 {
-    font-size: 28px;
-  }
-
-  .team-member {
-    width: 160px;
-  }
-
-  .section p {
-    font-size: 14px;
-  }
-
-  .btn-hero {
-    padding: 8px 18px;
-    font-size: 14px;
-  }
-}
-
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(50px);} to { opacity: 1; transform: translateY(0);} }
+    @media (max-width: 768px) { .hero h1 { font-size: 36px; } .btn-hero { padding: 10px 20px; } .section h2 { font-size: 28px; } .team-member { width: 180px; } }
+    @media (max-width: 480px) { .hero h1 { font-size: 28px; } .team-member { width: 160px; } .section p { font-size: 14px; } .btn-hero { padding: 8px 18px; font-size: 14px; } }
   </style>
 </head>
 <body>
+<div id="app">
+<!-- Hero -->
+<div class="hero">
+  <div>
+    <h1 v-text="siteTitle"></h1>
+    <p v-text="tagline"></p>
+    <a href="#vision" class="btn-hero" @click.prevent="scrollTo('vision')">了解更多</a>
+    <a :href="startUrl" class="btn-hero">開始體驗</a>
+  </div>
+</div>
 
-  <!-- Hero Section -->
-  <div class="hero">
-    <div>
-      <h1>MyStylist</h1>
-      <p>妳想成為的樣子，我們一起穿出來</p>
-      <a href="#vision" class="btn-hero" onclick="smoothScroll(event)">了解更多</a>
-      <a href="https://gggiiina.github.io/MyStylist/outfit.html" class="btn-hero">開始體驗</a>
+<!-- 願景 -->
+<div id="vision" class="section">
+  <h2>我們的願景</h2>
+  <p v-for="(p, index) in vision" :key="index" v-text="p"></p>
+</div>
+
+<!-- 核心理念 -->
+<div class="section">
+  <h2>核心理念</h2>
+  <p v-for="(p, index) in philosophy" :key="index" v-text="p"></p>
+</div>
+
+<!-- 團隊成員 -->
+<div class="section">
+  <h2>團隊成員</h2>
+  <div class="team-members">
+    <div v-for="(member, index) in team" :key="index" class="team-member">
+      <h3 v-text="member.name"></h3>
+      <p v-text="member.role"></p>
     </div>
   </div>
+</div>
 
-  <!-- 願景區 -->
-  <div id="vision" class="section">
-    <h2>我們的願景</h2>
-    <p>我們的願景是將時尚與科技完美融合，為每個追求獨特風格的人提供量身定制的穿搭建議。透過我們的 AI 助理，我們不僅幫助用戶提升外觀，還希望每個人都能從中找到自信和樂趣。</p>
-    <p>我們希望消除“過度消費”和“重複穿搭”的困擾，讓衣櫃成為妳的另一種表達方式，並且每一件衣服都能在未來的某一天再次被重新搭配，展現不同的樣貌。</p>
-  </div>
-
-  <!-- 核心理念區 -->
-  <div class="section">
-    <h2>核心理念</h2>
-    <p>簡單好用的時尚 AI 助理，為妳量身打造每一個搭配，輕鬆打造獨特的風格。</p>
-    <p>我們將引入更多先進的 AI 技術，無論是風格搭配、衣櫃管理還是購物建議，我們都希望能為每一位用戶提供最貼合的解決方案。</p>
-  </div>
-
-  <!-- 團隊成員區 -->
-  <div class="section">
-    <h2>團隊成員</h2>
-    <div class="team-members">
-      <div class="team-member">
-        <h3>吳姿漫</h3>
-        <p>XXXXX</p>
-      </div>
-      <div class="team-member">
-        <h3>郭啓榮</h3>
-        <p>XXXXX</p>
-      </div>
-      <div class="team-member">
-        <h3>林群偉</h3>
-        <p>XXXXX</p>
-      </div>
-      <div class="team-member">
-        <h3>曾詩婷</h3>
-        <p>XXXXX</p>
-      </div>
-      <div class="team-member">
-        <h3>蘇靜瑜</h3>
-        <p>XXXXX</p>
-      </div>
-      <div class="team-member">
-        <h3>陳禹翔</h3>  
-        <p>XXXXX</p>
-      </div>
-    </div>
-  </div>
 <script>
-    // 平滑滾動到指定區域
-    function smoothScroll(event) {
-      event.preventDefault();
-      const targetId = event.target.getAttribute("href");
-      const targetElement = document.querySelector(targetId);
-    
-      window.scrollTo({
-        top: targetElement.offsetTop,
-        behavior: "smooth"
-      });
+const { createApp } = Vue;
+createApp({
+  data() {
+    return {
+      siteTitle: "MyStylist",
+      tagline: "妳想成為的樣子，我們一起穿出來",
+      startUrl: "https://gggiiina.github.io/MyStylist/outfit.html",
+      vision: [
+        "我們的願景是將時尚與科技完美融合，為每個追求獨特風格的人提供量身定制的穿搭建議。",
+        "我們希望消除“過度消費”和“重複穿搭”的困擾，讓衣櫃成為妳的另一種表達方式，並且每一件衣服都能在未來的某一天再次被重新搭配。"
+      ],
+      philosophy: [
+        "簡單好用的時尚 AI 助理，為妳量身打造每一個搭配，輕鬆打造獨特的風格。",
+        "我們將引入更多先進的 AI 技術，無論是風格搭配、衣櫃管理還是購物建議，我們都希望能為每一位用戶提供最貼合的解決方案。"
+      ],
+      team: [
+        { name: "吳姿漫", role: "XXXXX" },
+        { name: "郭啓榮", role: "XXXXX" },
+        { name: "林群偉", role: "XXXXX" },
+        { name: "曾詩婷", role: "XXXXX" },
+        { name: "蘇靜瑜", role: "XXXXX" },
+        { name: "陳禹翔", role: "XXXXX" }
+      ]
     }
-  </script>
+  },
+  methods: {
+    scrollTo(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        window.scrollTo({
+          top: el.offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }
+}).mount("#app");
+</script>
 </body>
 </html>
