@@ -120,10 +120,7 @@
       box-shadow: 0 6px 12px var(--shadow-color);
       transition: transform 0.2s ease;
       position: relative;
-    }
-
-    .item-card:hover {
-      transform: translateY(-6px);
+      padding-bottom: 3px; /* 保留空間給刪除按鈕 */
     }
 
     .item-card img {
@@ -133,15 +130,13 @@
     }
 
     .item-actions {
-      position: absolute;
-      top: 6px;
-      right: 6px;
       display: flex;
-      gap: 8px;
+      justify-content: center;
+      position: relative;
+      padding-top: 4px; /* 在圖片與刪除按鈕之間加點間距 */
     }
 
     .item-actions i {
-      background-color: white;
       padding: 6px;
       border-radius: 50%;
       color: var(--main-color);
@@ -228,14 +223,16 @@
       <div class="item-card">
         <img src="https://www.gu-global.com/tw/hmall/test/u0000000050704/main/first/561/1.jpg" alt="衣物1" />
         <div class="item-actions">
-          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+          <i class="fas fa-edit" title="編輯衣物"></i>
+          <i class="fas fa-trash" title="刪除衣物"></i>
         </div>
       </div>
-
+    
       <div class="item-card">
         <img src="https://www.gu-global.com/tw/hmall/test/u0000000050705/main/first/561/1.jpg" alt="衣物2" />
         <div class="item-actions">
-          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+          <i class="fas fa-edit" title="編輯衣物"></i>
+          <i class="fas fa-trash" title="刪除衣物"></i>
         </div>
       </div>
 
@@ -266,7 +263,8 @@ document.getElementById('upload-input').addEventListener('change', function (eve
       card.innerHTML = `
         <img src="${img.src}" alt="新衣物" />
         <div class="item-actions">
-          <i class="fas fa-trash-alt" title="刪除衣物"></i>
+          <i class="fas fa-edit" title="編輯衣物"></i>
+          <i class="fas fa-trash" title="刪除衣物"></i>
         </div>
       `;
       document.querySelector('.closet-grid').prepend(card);

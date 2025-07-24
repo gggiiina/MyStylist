@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的衣櫃 - MyStylist</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --main-color: #8C7AA9;
+      --secondary-color: #B8A9D1;
+      --accent-color: #F0EAFB;
+      --hover-main: #7B6995;
+      --hover-secondary: #9E8BC3;
+      --text-color: #4C445B;
+      --bg-color: #F9F8FC;
+      --shadow-color: rgba(140,122,169,0.25);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 64px;
+      background: white;
+      box-shadow: 0 3px 10px var(--shadow-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 100;
+      border-bottom: 3px solid var(--secondary-color);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-color);
+      letter-spacing: 1px;
+      user-select: none;
+    }
+
+    .logo a {
+      text-decoration: none;
+      font-weight: bold;
+      color: var(--main-color);
+      font-size: 24px;
+    }
+
+    .nav-icons {
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-icons i {
+      font-size: 1.5rem;
+      color: var(--secondary-color);
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.25s ease;
+      padding: 6px;
+      border-radius: 50%;
+    }
+
+    .nav-icons i:hover {
+      color: var(--hover-secondary);
+      background-color: var(--accent-color);
+      transform: scale(1.15);
+    }
+
+    main {
+      padding: 100px 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .closet-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+
+    .filter-btn:hover {
+      background-color: var(--hover-secondary);
+      color: white;
+    }
+
+    .closet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 18px;
+    }
+
+    .item-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 12px var(--shadow-color);
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+
+    .item-card img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+    }
+
+    .more-options {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+    }
+
+    .more-options:hover {
+      background-color: var(--accent-color);
+    }
+
+    .item-actions {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: white;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      z-index: 10;
+      padding: 10px;
+    }
+
+    .item-actions button {
+      background: var(--bg-color);
+      border: none;
+      padding: 8px 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .item-actions button:hover {
+      background-color: var(--accent-color);
+    }
+
+    @media (max-width: 600px) {
+      .closet-title {
+        font-size: 1.4rem;
+      }
+
+      .nav-icons {
+        gap: 16px;
+      }
+
+      .nav-icons i {
+        font-size: 1.3rem;
+        padding: 4px;
+      }
+
+      main {
+        padding: 90px 16px 30px;
+      }
+    }
+
+    .upload-section {
+      margin-bottom: 24px;
+    }
+
+    .upload-label {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--main-color);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-label:hover {
+      background-color: var(--hover-main);
+    }
+
+    .upload-label i {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">MyStylist</div>
+    <div class="nav-icons">
+      <i class="fas fa-heart" title="穿搭" aria-label="穿搭"></i>
+      <i class="fas fa-shirt" title="衣櫃" aria-label="衣櫃"></i>
+    </div>
+  </nav>
+
+  <main>
+
+
+    <div class="upload-section">
+      <label for="upload-input" class="upload-label">
+        <i class="fas fa-upload"></i> 上傳新衣物
+      </label>
+      <input type="file" id="upload-input" accept="image/*" hidden />
+    </div>
+
+    <h1 class="closet-title">我的衣櫃</h1>
+
+    <div class="filter-bar">
+      <button class="filter-btn">全部</button>
+      <button class="filter-btn">上衣</button>
+      <button class="filter-btn">下身</button>
+      <button class="filter-btn">外套</button>
+    </div>
+    <section class="closet-grid">
+      <div class="item-card">
+        <img src="https://www.gu-global.com/tw/hmall/test/u0000000050704/main/first/561/1.jpg" alt="衣物1" />
+        <div class="more-options">
+          <i class="fas fa-ellipsis-h"></i> <!-- 橫向省略號 -->
+        </div>
+        <div class="item-actions">
+          <i class="fas fa-edit" title ="編輯衣物"></i>
+          <i class="fas fa-trash" title ="刪除衣物"></i>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <img src="https://www.gu-global.com/tw/hmall/test/u0000000050705/main/first/561/1.jpg" alt="衣物2" />
+        <div class="more-options">
+          <i class="fas fa-ellipsis-h"></i> <!-- 橫向省略號 -->
+        </div>
+        <div class="item-actions">
+          <i class="fas fa-edit" title ="編輯衣物"></i>
+          <i class="fas fa-trash" title ="刪除衣物"></i>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // 點擊 "更多選項" 顯示或隱藏操作選項
+  document.querySelectorAll('.more-options').forEach((button) => {
+    button.addEventListener('click', function(event) {
+      const actions = this.nextElementSibling;
+      // 切換顯示或隱藏
+      actions.style.display = actions.style.display === 'block' ? 'none' : 'block';
+      // 防止事件冒泡到 document，讓 document 事件處理器不觸發
+      event.stopPropagation();
+    });
+  });
+
+  // 當點擊其他地方時隱藏所有 item-actions
+  document.addEventListener('click', function() {
+    const actions = document.querySelectorAll('.item-actions');
+    actions.forEach((action) => {
+      action.style.display = 'none';
+    });
+  });
+
+  // 防止點擊 .more-options 時隱藏 item-actions
+  document.querySelectorAll('.more-options').forEach((element) => {
+    element.addEventListener('click', function(event) {
+      // 防止事件冒泡，讓 .item-actions 顯示
+      event.stopPropagation();
+    });
+  });
+
+  // 當點擊照片（.item-card）時隱藏 item-actions
+  document.querySelectorAll('.item-card').forEach((card) => {
+    card.addEventListener('click', function() {
+      const actions = this.querySelector('.item-actions');
+      if (actions) {
+        actions.style.display = 'none'; // 隱藏當前卡片的操作選項
+      }
+    });
+  });
+
+  // 文件上傳預覽功能
+  document.getElementById('upload-input').addEventListener('change', function (event) {
+    // 你可以根據需求處理上傳文件的內容
+    console.log(event.target.files);
+  });
+</script>
+
+
+</body>
+</html>

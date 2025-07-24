@@ -140,14 +140,12 @@
       font-size: 1.4rem;
       color: var(--main-color);
       cursor: pointer;
-      transition: color 0.3s ease, transform 0.25s ease;
+      transition: all 0.3s ease;
       padding: 8px;
       border-radius: 6px;
     }
 
     .actions i:hover {
-      color: var(--hover-main);
-      transform: scale(1.3);
       background-color: var(--accent-color);
     }
 
@@ -328,6 +326,11 @@
       margin-right: 8px;
     }
 
+    .outfit-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+    }
   </style>
 </head>
 <body>
@@ -348,7 +351,7 @@
       </label>
       <input type="file" id="upload-input" accept="image/*" hidden />
     </div>
-
+    <h1 class="outfit-title">我喜歡的穿搭</h1>
     <section class="product-grid" aria-live="polite">
       <article class="product-card" tabindex="0">
         <img src="https://www.gu-global.com/tw/hmall/test/u0000000050704/main/first/561/1.jpg" alt="商品1" loading="lazy" />
@@ -516,4 +519,3 @@
 
 </body>
 </html>
-
