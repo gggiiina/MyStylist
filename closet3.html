@@ -348,6 +348,45 @@
   background-color: var(--hover-main);
   transform: scale(1.1);
 }
+
+/* 上傳彈出框 */
+.upload-popup {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  background: white;
+  border: 1px solid var(--secondary-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1100;
+  width: 160px;
+}
+
+.upload-popup select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--secondary-color);
+  font-size: 0.95rem;
+}
+
+.confirm-upload-btn {
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.confirm-upload-btn:hover {
+  background-color: var(--hover-main);
+}
   </style>
 </head>
 <body>
@@ -360,14 +399,23 @@
     </div>
   </nav>
 
+<!-- 浮動上傳按鈕 -->
 <div class="upload-section">
-  <label for="upload-input" class="upload-float-btn" title="上傳新衣物">
+  <div class="upload-float-btn" id="open-upload-menu" title="新增衣物">
     <i class="fas fa-plus"></i>
-  </label>
-  <input type="file" id="upload-input" accept="image/*" hidden />
+  </div>
 </div>
 
+<!-- 彈出的小框 -->
+<div class="upload-popup" id="upload-popup">
+  <select id="upload-category">
+    <option value="" disabled selected>選擇分類</option>
+    </select>
+  <button id="confirm-upload" class="confirm-upload-btn">選擇圖片</button>
+</div>
 
+<!-- 隱藏的檔案輸入 -->
+<input type="file" id="upload-input" accept="image/*" hidden />
   <main>
 
     <h1 class="closet-title">我的衣櫃</h1>
@@ -424,102 +472,91 @@
   </main>
 
 <script>
+// === 1. 定義分類 Map ===
+const categoryMap = {
+  top: '上衣',
+  bottom: '下身',
+  shoes: '鞋子',
+  dress: '洋裝',
+  skirt: '裙子',
+  outwear: '外搭衣'
+};
 
-  const categories = ["全部", "上衣", "下身", "外套"];
-  // 建立 filter 按鈕
-  const filterBar = document.getElementById('filter-bar');
-  categories.forEach(category => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    btn.textContent = category;
-    filterBar.appendChild(btn);
-  });
-  
-  // 建立編輯下拉（不包含「全部」）
-  const editCategory = document.getElementById('edit-category');
-  categories.slice(1).forEach(category => {
-    const option = document.createElement('option');
-    option.value = category;
-    option.textContent = category;
-    editCategory.appendChild(option);
-  });
-  
+const filterBar = document.getElementById('filter-bar');
+const uploadBtn = document.getElementById('open-upload-menu');
+const uploadPopup = document.getElementById('upload-popup');
+const confirmUpload = document.getElementById('confirm-upload');
+const uploadInput = document.getElementById('upload-input');
+const categorySelect = document.getElementById('upload-category');
+const editCategory = document.getElementById('edit-category');
 
-  // 點擊 "更多選項" 顯示或隱藏操作選項
-  document.querySelectorAll('.more-options').forEach((button) => {
-    button.addEventListener('click', function(event) {
-      const actions = this.nextElementSibling;
-      // 切換顯示或隱藏
-      actions.style.display = actions.style.display === 'block' ? 'none' : 'block';
-      // 防止事件冒泡到 document，讓 document 事件處理器不觸發
-      event.stopPropagation();
-    });
-  });
+// === 2. 建立篩選按鈕 ===
+const allBtn = document.createElement('button');
+allBtn.className = 'filter-btn';
+allBtn.textContent = '全部';
+allBtn.dataset.category = 'all';
+filterBar.appendChild(allBtn);
 
-  // 當點擊其他地方時隱藏所有 item-actions
-  document.addEventListener('click', function() {
-    const actions = document.querySelectorAll('.item-actions');
-    actions.forEach((action) => {
-      action.style.display = 'none';
-    });
-  });
+for (const [key, label] of Object.entries(categoryMap)) {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = label;
+  btn.dataset.category = key;
+  filterBar.appendChild(btn);
+}
 
-  // 防止點擊 .more-options 時隱藏 item-actions
-  document.querySelectorAll('.more-options').forEach((element) => {
-    element.addEventListener('click', function(event) {
-      // 防止事件冒泡，讓 .item-actions 顯示
-      event.stopPropagation();
-    });
-  });
+// === 3. 上傳分類下拉 ===
+for (const [key, label] of Object.entries(categoryMap)) {
+  const option = document.createElement('option');
+  option.value = key;
+  option.textContent = label;
+  categorySelect.appendChild(option);
+}
 
-  // 當點擊照片（.item-card）時隱藏 item-actions
-  document.querySelectorAll('.item-card').forEach((card) => {
-    card.addEventListener('click', function() {
-      const actions = this.querySelector('.item-actions');
-      if (actions) {
-        actions.style.display = 'none'; // 隱藏當前卡片的操作選項
-      }
-    });
-  });
+// === 4. 編輯下拉 ===
+for (const [key, label] of Object.entries(categoryMap)) {
+  const option = document.createElement('option');
+  option.value = key;
+  option.textContent = label;
+  editCategory.appendChild(option);
+}
 
-  // 文件上傳預覽功能
-document.getElementById('upload-input').addEventListener('change', function (event) {
-  const files = event.target.files;
-  const closetGrid = document.querySelector('.closet-grid');
-
-  Array.from(files).forEach(file => {
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-      // 創建新的衣物卡片元素
-      const newCard = document.createElement('div');
-      newCard.className = 'item-card';
-
-      newCard.innerHTML = `
-        <img src="${e.target.result}" alt="新上傳衣物" />
-        <div class="more-options">
-          <i class="fas fa-ellipsis-h"></i>
-        </div>
-        <div class="item-actions">
-          <i class="fas fa-edit" title="編輯衣物"></i>
-          <i class="fas fa-trash" title="刪除衣物"></i>
-        </div>
-      `;
-
-      // 插入到畫面上
-      closetGrid.prepend(newCard);
-
-      // 重新綁定這個新卡片的事件處理
-      bindItemCardEvents(newCard);
-    };
-
-    reader.readAsDataURL(file); // 將圖像轉為 base64
-  });
-
-  // 清空檔案選擇器（允許再次上傳同一檔案）
-  event.target.value = '';
+// === 5. 浮動按鈕：開關上傳彈窗 ===
+uploadBtn.addEventListener('click', function () {
+  const isOpen = uploadPopup.style.display === 'flex';
+  uploadPopup.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) {
+    categorySelect.value = ''; // 每次打開時重置分類
+  }
 });
 
+// === 6. 選擇分類後打開檔案上傳 ===
+confirmUpload.addEventListener('click', function () {
+  if (!categorySelect.value) {
+    alert('請先選擇分類');
+    return;
+  }
+  uploadPopup.style.display = 'none';
+  uploadInput.click();
+});
+
+// === 7. 篩選功能 ===
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('filter-btn')) {
+    const selected = e.target.dataset.category;
+    document.querySelectorAll('.item-card').forEach(card => {
+      const cardCategory = card.getAttribute('data-category');
+      if (selected === 'all' || cardCategory === selected) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+});
+
+
+// === 9. 卡片事件綁定 ===
 function bindItemCardEvents(card) {
   const moreOptions = card.querySelector('.more-options');
   const itemActions = card.querySelector('.item-actions');
@@ -543,51 +580,30 @@ function bindItemCardEvents(card) {
     openModal('delete-modal');
   });
 
-  // 點擊卡片其他區域時關閉選單
   card.addEventListener('click', function () {
     itemActions.style.display = 'none';
   });
 }
 
+// === 10. Modal 操作 ===
 let selectedItemCard = null;
-
-// 開啟 modal
 function openModal(id) {
   document.getElementById(id).style.display = 'flex';
 }
-
-// 關閉 modal
 function closeModal(id) {
   document.getElementById(id).style.display = 'none';
 }
 
-// 編輯事件處理
-document.querySelectorAll('.fa-edit').forEach((editBtn) => {
-  editBtn.addEventListener('click', function (event) {
-    event.stopPropagation();
-    selectedItemCard = this.closest('.item-card');
-    openModal('edit-modal');
-  });
-});
-
 // 儲存編輯
 document.getElementById('modal-yes').addEventListener('click', function () {
   const selectedCategory = document.getElementById('edit-category').value;
-  console.log('選擇的新分類:', selectedCategory);
-  alert(`衣物類別已更新為「${selectedCategory}」`);
+  if (selectedItemCard) {
+    selectedItemCard.setAttribute('data-category', selectedCategory);
+  }
   closeModal('edit-modal');
 });
 
-// 刪除事件處理
-document.querySelectorAll('.fa-trash').forEach((trashBtn) => {
-  trashBtn.addEventListener('click', function (event) {
-    event.stopPropagation();
-    selectedItemCard = this.closest('.item-card');
-    openModal('delete-modal');
-  });
-});
-
-// 確認刪除
+// 刪除衣物
 document.getElementById('confirm-delete').addEventListener('click', function () {
   if (selectedItemCard) {
     selectedItemCard.remove();
@@ -596,14 +612,22 @@ document.getElementById('confirm-delete').addEventListener('click', function () 
   closeModal('delete-modal');
 });
 
-// 關閉按鈕
+// 關閉 modal
 document.querySelectorAll('.btn-cancel').forEach((btn) => {
   btn.addEventListener('click', function () {
     closeModal('edit-modal');
     closeModal('delete-modal');
   });
 });
-</script>
 
+// === 11. 點擊任何地方關閉所有 item-actions ===
+document.addEventListener('click', function (e) {
+  document.querySelectorAll('.item-actions').forEach(actions => {
+    if (!actions.contains(e.target) && !e.target.closest('.more-options')) {
+      actions.style.display = 'none';
+    }
+  });
+});
+</script>
 </body>
 </html>
